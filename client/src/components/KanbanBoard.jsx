@@ -1,30 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext} from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Input from "./Input";
-import Button from "./Button";
 import Modal from "./Modal";
+import { CategoriesContext } from "../context/CategoriesContext";
 
 
 const grid = 8;
 
 function KanbanBoard() {
-  const [categories, setCategories] = useState([]);
+  const { categories, setCategories } = useContext(CategoriesContext);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/categories"
-        );
-        setCategories(response.data.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-    fetchData();
-  }, []);
+
+
 
   // Handle Drag-and-Drop
   const onDragEnd = async (result) => {
@@ -80,12 +69,14 @@ function KanbanBoard() {
     }
   };
 
+
+
   return (
     <div className="mt-10">
       <div className="flex items-center justify-between mb-10">
         <h3 className="text-2xl">Product list</h3>
         <div className="flex items-center gap-5">
-          <Input />
+          <Input label="Search product"/>
           <Modal/>
         </div>
       </div>

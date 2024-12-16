@@ -1,17 +1,19 @@
 import "./App.css";
 import KanbanBoard from "./components/KanbanBoard";
 import BarcodeScanner from "./components/BarcodeScanner";
+import { CategoriesProvider } from "./context/CategoriesContext";
 
 function App() {
   const handleBarcodeDetected = (barcode) => {
     console.log("Detected barcode:", barcode);
   };
 
-
   return (
     <>
-      <BarcodeScanner onDetected={handleBarcodeDetected} />
-      <KanbanBoard />
+      <CategoriesProvider>
+        <BarcodeScanner onDetected={handleBarcodeDetected} />
+        <KanbanBoard />
+      </CategoriesProvider>
     </>
   );
 }
