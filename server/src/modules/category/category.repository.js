@@ -11,17 +11,22 @@ class CategoryRepository extends BaseRepository {
      const category = new this.#model(categoryEntries)
      return await category.save()
   }
-
-  getAllCategory = async()=>{
-    const condition = {};
-
+  getAllCategory = async (searchQuery = "") => {
     const categoriesWithProducts = await Category.aggregate([
       {
         $lookup: {
-          from: 'products', 
-          localField: '_id', 
-          foreignField: 'category', 
-          as: 'products', 
+          from: "products", 
+          localField: "_id", 
+          foreignField: "category", 
+          as: "products", 
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { category_name: { $regex: searchQuery, $options: "i" } }, 
+            { "products.name": { $regex: searchQuery, $options: "i" } }, 
+          ],
         },
       },
       {
@@ -29,14 +34,14 @@ class CategoryRepository extends BaseRepository {
           _id: 1,
           category_name: 1,
           status: 1,
-          products: 1, 
-          
+          products: 1,
         },
       },
     ]);
-
+  
     return categoriesWithProducts;
-  }
+  };
+  
 
 }
 

@@ -14,8 +14,8 @@ class CategoryService extends BaseService {
   createCategory = async (categoryEntries) =>
     await this.#categoryRepository.createCategory(categoryEntries);
 
-  getAllCategory = async () =>
-    await this.#categoryRepository.getAllCategory()
+  getAllCategory = async (searchQuery) =>
+    await this.#categoryRepository.getAllCategory(searchQuery)
 
 }
 

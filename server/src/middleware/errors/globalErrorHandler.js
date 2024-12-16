@@ -4,9 +4,9 @@ const globalErrorHandler = (err, req, res, next) => {
 
   // Handle MongoDB duplicate key error (E11000)
   if (err.code === 11000) {
-    const keyValue = err.keyValue || {}; // Extract duplicate key information
-    const duplicateField = Object.keys(keyValue)[0]; // Get the field causing the conflict
-    const duplicateValue = keyValue[duplicateField]; // Get the conflicting value
+    const keyValue = err.keyValue || {}; 
+    const duplicateField = Object.keys(keyValue)[0]; 
+    const duplicateValue = keyValue[duplicateField]; 
     message = `Duplicate value found for "${duplicateField}": "${duplicateValue}". Please use a unique value.`;
     code = 409; // Conflict status code
   }

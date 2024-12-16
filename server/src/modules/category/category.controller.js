@@ -24,7 +24,8 @@ class CategoryController {
 
 
   getAllCategory = catchError(async (req, res, next) => {
-    const data = await this.#categoryService.getAllCategory();
+    const {searchQuery} = req.query
+    const data = await this.#categoryService.getAllCategory(searchQuery);
     const resDoc = responseHandler(201, 'Category fetched successfully', data);
     res.status(resDoc.statusCode).json(resDoc);
   })
