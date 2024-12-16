@@ -28,7 +28,7 @@ export default function Modal() {
       fetchData()
       toast.success("Category created successfully!");
       setNewCategory("");
-      document.getElementById("my_modal_1").close();
+      document.getElementById("my_modal_2").close();
     } catch (error) {
       toast.error("Failed to create category. Please try again.");
     }
@@ -37,10 +37,10 @@ export default function Modal() {
   return (
     <div>
       <Button
-        onClick={() => document.getElementById("my_modal_1").showModal()}
+        onClick={() => document.getElementById("my_modal_2").showModal()}
         label="New category"
       />
-      <dialog id="my_modal_1" className="modal">
+      <dialog id="my_modal_2" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-3">Create new category</h3>
           <Input

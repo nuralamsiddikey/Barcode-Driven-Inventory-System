@@ -1,17 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client'; // Import createRoot
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import './index.css';
-import toast, { Toaster } from 'react-hot-toast';
+import React from "react";
+import ReactDOM from "react-dom/client"; // Import createRoot
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./index.css";
+import toast, { Toaster } from "react-hot-toast";
+import { CategoriesProvider } from "./context/CategoriesContext";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-      <Toaster />
-    </BrowserRouter>
+    <CategoriesProvider>
+      <BrowserRouter>
+        <App />
+        <Toaster />
+      </BrowserRouter>
+    </CategoriesProvider>
   </React.StrictMode>
 );

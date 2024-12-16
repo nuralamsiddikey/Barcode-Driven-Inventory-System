@@ -12,6 +12,7 @@ class ProductController {
   }
 
   createProduct = catchError(async (req, res, next) => {
+    console.log("here is req body",req.body)
     const { error, value } = productValidate(req.body)
     if (error) {
       throw new BadRequestError(error.message)

@@ -12,9 +12,6 @@ const grid = 8;
 function KanbanBoard() {
   const { categories, setCategories } = useContext(CategoriesContext);
 
-
-
-
   // Handle Drag-and-Drop
   const onDragEnd = async (result) => {
     const { source, destination } = result;
@@ -74,15 +71,14 @@ function KanbanBoard() {
   return (
     <div className="mt-10">
       <div className="flex items-center justify-between mb-10">
-        <h3 className="text-2xl">Product list</h3>
-        <div className="flex items-center gap-5">
-          <Input label="Search product"/>
+      <div className="flex items-center gap-5">
           <Modal/>
+          <Input label="Search product"/>
         </div>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-10 justify-center">
+        <div className="flex gap-10 justify-between">
           {categories.map((category) => (
             <Droppable key={category._id} droppableId={category._id}>
               {(provided, snapshot) => (
