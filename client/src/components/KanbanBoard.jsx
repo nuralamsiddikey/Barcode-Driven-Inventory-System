@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
+import toast from "react-hot-toast";
+
 
 const grid = 8;
 
-// Style helpers
+
 const getItemStyle = (isDragging, draggableStyle) => ({
   userSelect: "none",
   padding: grid * 2,
@@ -20,35 +21,16 @@ const getListStyle = (isDraggingOver) => ({
   width: 300,
 });
 
-// Transform API response into grouped categories
-const transformDataToKanban = (data) => {
-  const categoryMap = {};
-  data.forEach((item) => {
-    const category = item.category || "Uncategorized";
-    if (!categoryMap[category]) {
-      categoryMap[category] = [];
-    }
-    categoryMap[category].push(item);
-  });
-
-  return Object.entries(categoryMap).map(([name, items]) => ({
-    name,
-    items,
-  }));
-};
-
 function KanbanBoard() {
   const [categories, setCategories] = useState([]);
 
-  // Fetch data from API on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/products"); // Update with your API endpoint
-        const transformed = transformDataToKanban(response.data.data);
-        setCategories(transformed);
+        const response = await axios.get("http://localhost:8080/api/categories");
+        setCategories(response.data.data); 
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching categories:", error);
       }
     };
     fetchData();
@@ -71,19 +53,19 @@ function KanbanBoard() {
 
     // Get source and destination categories
     const sourceIndex = categories.findIndex(
-      (cat) => cat.name === source.droppableId
+      (cat) => cat._id === source.droppableId
     );
     const destinationIndex = categories.findIndex(
-      (cat) => cat.name === destination.droppableId
+      (cat) => cat._id === destination.droppableId
     );
 
     const sourceCategory = categories[sourceIndex];
     const destinationCategory = categories[destinationIndex];
 
     // Move the dragged item
-    const [movedItem] = sourceCategory.items.splice(source.index, 1);
-    movedItem.category = destinationCategory.name; // Update the item's category
-    destinationCategory.items.splice(destination.index, 0, movedItem);
+    const [movedItem] = sourceCategory.products.splice(source.index, 1);
+    movedItem.category = destinationCategory._id; 
+    destinationCategory.products.splice(destination.index, 0, movedItem);
 
     // Optimistically update the state
     const updatedCategories = [...categories];
@@ -91,20 +73,21 @@ function KanbanBoard() {
     updatedCategories[destinationIndex] = destinationCategory;
     setCategories(updatedCategories);
 
-    // Persist the change in the backend
-    // try {
-    //   await axios.put(`/api/products/${movedItem._id}`, {
-    //     category: movedItem.category,
-    //   });
-    //   console.log("Category updated successfully");
-    // } catch (error) {
-    //   console.error("Failed to update category:", error);
+    try {
+      await axios.put(
+        `http://localhost:8080/api/products/category/${movedItem._id}`,
+        {
+          category: destinationCategory._id, // New category ID
+        }
+      );
+      toast.success('Successfully updated category')
+    } catch (error) {
+      console.error("Failed to update category:", error);
 
-    //   // Revert the state if the API call fails
-    //   sourceCategory.items.splice(source.index, 0, movedItem);
-    //   destinationCategory.items.splice(destination.index, 1);
-    //   setCategories([...categories]);
-    //}
+      sourceCategory.products.splice(source.index, 0, movedItem);
+      destinationCategory.products.splice(destination.index, 1);
+      setCategories([...categories]);
+    }
   };
 
   return (
@@ -113,18 +96,18 @@ function KanbanBoard() {
       <DragDropContext onDragEnd={onDragEnd}>
         <div style={{ display: "flex", gap: "20px" }}>
           {categories.map((category) => (
-            <Droppable key={category.name} droppableId={category.name}>
+            <Droppable key={category._id} droppableId={category._id}>
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                   {...provided.droppableProps}
                 >
-                  <h3>{category.name}</h3>
-                  {category.items.map((item, index) => (
+                  <h3 className="">{category.category_name}</h3>
+                  {category.products.map((product, index) => (
                     <Draggable
-                      key={item._id}
-                      draggableId={item._id}
+                      key={product._id}
+                      draggableId={product._id}
                       index={index}
                     >
                       {(provided, snapshot) => (
@@ -137,8 +120,8 @@ function KanbanBoard() {
                             provided.draggableProps.style
                           )}
                         >
-                          <p><strong>Barcode:</strong> {item.barcode}</p>
-                          <p><strong>Description:</strong> {item.description}</p>
+                          <p><strong>Barcode:</strong> {product.barcode}</p>
+                          <p><strong>Description:</strong> {product.description}</p>
                         </div>
                       )}
                     </Draggable>
@@ -154,4 +137,4 @@ function KanbanBoard() {
   );
 }
 
-export default KanbanBoard
+export default KanbanBoard;
